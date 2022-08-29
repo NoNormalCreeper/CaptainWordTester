@@ -33,13 +33,12 @@ def readJsonFile():
         sys.exit(1)
     waitString = askedFile.read()
     askedFile.close()
-    dataDict =json.loads(waitString)
-    return dataDict
+    return json.loads(waitString)
 
 def scanDict(dataDict):
     '''对字典进行解析，处理掉单独的字典'''
     judge = [1,1]                       #[是否为纯字典，是否为纯字符串]   
-    delete = []             
+    delete = []
     for key in dataDict:
         if isinstance(dataDict[key],dict):
             judge[1] = 0
@@ -49,7 +48,6 @@ def scanDict(dataDict):
     if judge == [0,0]:
         for few in delete:
             del dataDict[few]
-    if judge == [0,0]:
         return [dataDict , 0]           #0是二者得兼喽...
     if judge == [0,1]:                  #注意，这里说的是处理之前的字典
         return [dataDict , 'str']       #'str'是纯字符串，直接退出循环就可以了
@@ -59,20 +57,17 @@ def scanDict(dataDict):
 def askDict(Dict):
     print('Choose a Dict which you want to choose:')
     print('Press "q" to return the mode choose page.')
-    i = 1
     List = dictToList(Dict)
-    for little in List:
+    for i, little in enumerate(List, start=1):
         print('%d : %s.' % (i , little[0]))
-        i += 1
-    while True:                     #判定输入的字符是否合法
+    while True:             #判定输入的字符是否合法
         choose = input('Input its ID then press "ENTER":')
         try:
             choose = int(choose)
             if choose > 0 and choose <= len(List):
                 break
-            else:
-                print('ERROR!Your input is not defined!')
-                continue
+            print('ERROR!Your input is not defined!')
+            continue
         except:
             if choose == 'q':
                 return 'EXIT'
@@ -110,33 +105,26 @@ def readTxtFile():
     askedFile.close()
     finalString = waitString.replace(' ',',')
     waitList = finalString.split("\n")
-    finalList = []
-    for littleList in waitList:
-        finalList.append(littleList.split(','))
-    return finalList
+    return [littleList.split(',') for littleList in waitList]
 
 def valueList(list):
     """
     valueList函数：将列表的子列表(key , value)转换为（数字：value）的形式
     """
-    i = 1
     List = []
-    for littleList in list:
+    for i, littleList in enumerate(list, start=1):
         list = [i ,littleList[1]]
         List.append(list)
-        i += 1
     return List
 
 def keyList(list):
     '''
     keyList函数：将列表的子列表(key , value)转换为（数字：key）的形式
     '''
-    i = 1
     List = []
-    for littleList in list:
+    for i, littleList in enumerate(list, start=1):
         list = [i ,littleList[0]]
         List.append(list)
-        i += 1
     return List
 
 def modeA(finalList):
@@ -175,7 +163,7 @@ def modeA(finalList):
             print('\tTotleMember : %d\n\tTrueMember : %d \n\tFalseMember : %d ' % (questionMEM - 1,trueMEM , falseMEM))
             askedLog.write('\nSummarize:'\
                            '\nTotleMember : %d\nTrueMember : %d \nFalseMember : %d ' % (questionMEM - 1,trueMEM , falseMEM))
-            if (questionMEM - 1) != 0:          #被除数为0会怎么样呢？
+            if questionMEM != 1:          #被除数为0会怎么样呢？
                 print('\tCorrect rate: %.2f' % (trueMEM/(questionMEM - 1)))
                 askedLog.write('\nCorrect rate: %.2f' % (trueMEM/(questionMEM - 1)))
             askedLog.write('\nWrong Words : ')  #错误回答的问题写入到日志中
@@ -190,9 +178,7 @@ def modeA(finalList):
             answer2 = input()
             if answer2 == answerList[int][1]:
                 print('Right！''\n-------')
-                questionMEM += 1
                 trueMEM += 1
-                continue
             else:
                 askedLog.write('\nQuestion %d : %s ' % (questionMEM, askedList[int][1]))
                 askedLog.write('\nAnswer1: %s (False)' % answer1)
@@ -203,9 +189,10 @@ def modeA(finalList):
                 print(answerList[int][1])
                 print('-------')
                 wrongWord.append([finalList[int] , [answer1,answer2]])
-                questionMEM += 1
                 falseMEM += 1
-                continue
+
+            questionMEM += 1
+            continue
 
 def modeB(finalList):
     '''
@@ -240,7 +227,7 @@ def modeB(finalList):
             askedLog.write( '\nSummarize:' \
                             '\nTotleMember : %d\nTrueMember : %d \nFalseMember : %d \nUnknownMember : %d ' \
                                  % (questionMEM - 1, trueMEM, falseMEM, unknownMEM))
-            if (questionMEM - 1) != 0:                  #被除数为0会怎么样呢？
+            if questionMEM != 1:                  #被除数为0会怎么样呢？
                 print('\tCorrect rate: %.2f' % (trueMEM/(questionMEM - 1)))
                 askedLog.write('\nCorrect rate: %.2f' % (trueMEM/(questionMEM - 1)))
             askedLog.write('\nWrong Questions : ')      #错误回答的问题写入到日志中
@@ -253,7 +240,7 @@ def modeB(finalList):
             askedLog.close()
             break
         print('--Your judge was recorded.We will show the standard answer.')
-        print('The standard answer is：%s' % askedList[int][1])
+        print(f'The standard answer is：{askedList[int][1]}')
         while True:
             answer2 = input('Check your answer(Right（“y”）Wrong（“n”）Skip（“ENTER”）):')
             if answer2 == 'y':
@@ -291,11 +278,8 @@ def dictToList(finalDict):
     '''
     将字典转换为列表
     '''
-    finalList = []
     startList = finalDict.items()
-    for object in startList:
-        finalList.append(list(object))
-    return finalList
+    return [list(object) for object in startList]
   
 def scanCycle(startDict):
     while True:
@@ -304,9 +288,7 @@ def scanCycle(startDict):
             print('The value attribute of the dictionary mixes dictionaries and strings.\n \
                 So we keep the dictionary, the string will not be recognized.')
         if judgeList[1] == 'str':
-            #Need change the dict to list!
-            fianlList = dictToList(judgeList[0])
-            return fianlList
+            return dictToList(judgeList[0])
         thenDict = askDict(judgeList[0])
         if thenDict == 'EXIT':
             return 'EXIT'
